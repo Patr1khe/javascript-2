@@ -9,6 +9,7 @@ const App = () => {
 	const handleButtonClick = () => {
 		setMsg("Bye mom")
 		setCount(count +1)
+		console.log("clicks",count +1)
 	}
 
 
