@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import React, { FC, useState } from 'react'
+import { ReactDOM } from 'react'
 import './App.css'
 
 type Post = {
@@ -12,6 +13,7 @@ const App = () => {
 	const [msg, setMsg] = useState("Hi mom, I'm stateful")
 	const [count, setCount] = useState(0)
 	const [salary, setSalary] = useState(10)
+	const [showSalary, setShowSalary] = useState(false)
 
 	const [posts, setPosts] = useState<Post[]>([
 		{id: 1, title: "Reacts Rocks!", likes: 1337},
@@ -21,7 +23,8 @@ const App = () => {
 
 	const handleButtonClick = () => {
 		setMsg("Bye mom")
-		setCount(count +1)
+		setCount( (prevClicks) => { return prevClicks + 1 } )
+		// setCount(count +1)
 		console.log("clicks",count +1)
 	}
 
@@ -33,6 +36,16 @@ const App = () => {
 		setSalary(salary + amount)
 	}
 
+	const handleAddLike = (post: Post) => {
+		post.likes++
+
+		setPosts([...posts])
+	}
+
+	const handlePostDelete = (postToDelete: Post) => {
+		const newPosts = posts.filter(post => post !== postToDelete )
+		setPosts(newPosts)
+	}
 
 	return (
 		<div className="App">
@@ -47,50 +60,73 @@ const App = () => {
 
 			<hr />
 
-			<p>Salary per hour: {salary} &euro;</p>
+			{/*
+			<button className="btn btn-primary" onClick={() => setShowSalary(true)}>Show salary</button>
+			<button className="btn btn-primary" onClick={() => setShowSalary(false)}>Hide salary</button>
+			*/}
+			<button className="btn btn-primary" onClick={() => setShowSalary(!showSalary)}>
+				{showSalary ? "Hide salary" : "Show salary"}
+			</button>
 
-			{salary < 10 && (
-				<div className="alert alert-warning">You might want to change job?</div>
+
+			{showSalary && (
+				<>
+					<p>Salary per hour: {salary} &euro;</p>
+
+					{salary < 10 && (
+						<div className="alert alert-warning">You might want to change job?</div>
+					)}
+
+					<div className="buttons">
+						<div className="mb-1">
+							<button
+								className="btn btn-primary btn-lg"
+								onClick={() => { handleChangeSalary(1) }}
+							>Raise 1 &euro; 🤑</button>
+							<button
+								className="btn btn-warning btn-lg"
+								onClick={() => { handleChangeSalary(-1) }}
+							>Decrease 1 &euro; 😢</button>
+						</div>
+
+						<div className="mb-1">
+							<button
+								className="btn btn-success btn-lg"
+								onClick={() => { handleChangeSalary(5) }}
+							>Raise 5 &euro; 🤑🤑🤑</button>
+							<button
+								className="btn btn-danger btn-lg"
+								onClick={() => { handleChangeSalary(-5) }}
+							>Decrease 5 &euro; 😢😢😢</button>
+						</div>
+					</div>
+				</>
 			)}
-
-			<div className="buttons">
-				<div className="mb-1">
-					<button
-						className="btn btn-primary btn-lg"
-						onClick={() => { handleChangeSalary(1) }}
-					>Raise 1 &euro; 🤑</button>
-					<button
-						className="btn btn-warning btn-lg"
-						onClick={() => { handleChangeSalary(-1) }}
-					>Decrease 1 &euro; 😢</button>
-				</div>
-
-				<div className="mb-1">
-					<button
-						className="btn btn-success btn-lg"
-						onClick={() => { handleChangeSalary(5) }}
-					>Raise 5 &euro; 🤑🤑🤑</button>
-					<button
-						className="btn btn-danger btn-lg"
-						onClick={() => { handleChangeSalary(-5) }}
-					>Decrease 5 &euro; 😢😢😢</button>
-				</div>
-			</div>
-
 			<hr />
 
 			<h2>Posts</h2>
 
-			<ul>
-				{
-					posts.map( (post, index) => (
-						<li key={index}>
-							{post.title} ({post.likes} likes)
-						</li>
-					))
-				}
-			</ul>
+			{posts.length > 0 && (
+				<ul>
+					{
+						posts.map( (post, index) => (
+							<li key={index}>
+								{post.title} ({post.likes} likes)
+								<button
+									className="btn btn-success btn-sm ms-1"
+									onClick={() => handleAddLike(post)}
+								>❤️</button>
+								<button
+									className="btn btn-danger btn-sm ms-1"
+									onClick={() => handlePostDelete(post)}
+								>🗑️</button>
+							</li>
+						))
+					}
+				</ul>
+			)}
 
+			{posts.length === 0 && (<p>These are not the posts you're looking for</p>)}
 		</div>
 	)
 }
