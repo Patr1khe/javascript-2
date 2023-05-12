@@ -1,35 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { Todo, TodoList } from './assets/types'
+import { Todo, Todos } from './assets/types'
 import TodoListItem from './assets/components/TodoListItem'
 import TodoCounter from './assets/components/TodoCounter'
+import AddNewTodoForm from './assets/components/AddNewTodoForm'
+import TodoList from './assets/components/TodoList'
 import './App.css'
 
 function App() {
-	const [todos, setTodos] = useState<TodoList>([
+	const [todos, setTodos] = useState<Todos>([
 		{title: "Reacts Rocks!", completed: true,},
 		{title: "Cool", completed: false},
 		{title: "WHAAAT!", completed: true},
 	])
 
-	const [newTodoTitle, setNewTodoTitle] = useState("")
+	const addTodo = (todo: Todo) => {
+		setTodos([...todos, todo])
+	}
 
 	const toggleTodo = (todo: Todo) => {
 		todo.completed = !todo.completed
 
 		setTodos([...todos])
-	}
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault()
-
-		const newTodo: Todo = {
-			title: newTodoTitle,
-			completed: false,
-		}
-
-		setTodos([...todos, newTodo])
-
-		setNewTodoTitle("")
 	}
 
 	const deleteTodo = (todoToDelete: Todo) => {
@@ -58,23 +49,25 @@ function App() {
 		<div className='App'>
 			<h1>React Todo</h1>
 
-			<form onSubmit={handleSubmit} className="mb-3">
-				<div className="input-group mb-3">
-					<input
-					type="text"
-					className="form-control"
-					placeholder='Create Todo'
-					onChange={e => setNewTodoTitle(e.target.value)}
-					value={newTodoTitle}
-					/>
-					<button className="btn btn-success mb">Create</button>
-				</div>
-			</form>
+			<AddNewTodoForm onAddTodo={addTodo} />
 
 			<hr />
 			{todos.length > 0 && (
 					<>
-						<ul className="todolist">
+
+					<TodoList
+						onToggle={toggleTodo}
+						onDelete={deleteTodo}
+						todos={unfinishedTodos}
+					/>
+
+					<TodoList
+						onToggle={toggleTodo}
+						onDelete={deleteTodo}
+						todos={finishedTodos}
+					/>
+
+						{/* <ul className="todolist">
 							{unfinishedTodos.map((todo, index) => (
 								<TodoListItem
 									onToggle={toggleTodo}
@@ -94,7 +87,7 @@ function App() {
 									key={index}
 								/>
 							) )}
-						</ul>
+						</ul> */}
 
 						<TodoCounter finished={finishedTodos.length} total={todos.length} />
 					</>
