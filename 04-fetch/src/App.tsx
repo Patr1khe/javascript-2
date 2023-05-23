@@ -1,24 +1,38 @@
 import { useEffect, useState } from 'react'
+import { IResource } from './types'
+import { getResource } from './services/API'
 import './assets/scss/App.scss'
-
-interface IResource {
-	id: number
-	title: string
-}
+import ResourceList from './components/ResourceList'
 
 
 function App() {
 	const [resource, setResource] = useState('')
 	const [data, setData] = useState<IResource[]>([])
+	const [isLoading, setIsLoading] = useState(false)
+	const [error, setError] = useState('')
 
 	useEffect(() => {
-		if (!resource) {
-			return
-		}
 		const fetchData = async () => {
-			const res = await fetch(`https://jsonplaceholder.typicode.com/${resource}`)
-				const payload = await res.json()
+			if (!resource) {
+				return
+			}
+
+			// empty data before fetching new
+			// and set loading
+			setData([])
+			setIsLoading(true)
+
+			try {
+				const payload = await getResource(resource)
+
+				// update data state with resource payload
 				setData(payload)
+				setIsLoading(false)
+
+			} catch (e: any) {
+				setIsLoading(false)
+				setError(e.toString())
+			}
 		}
 		fetchData()
 	}, [resource])
@@ -32,19 +46,15 @@ function App() {
 				<button onClick={() => setResource('photos')} className="btn btn-success">Photos</button>
 				<button onClick={() => setResource('posts')} className="btn btn-warning">Posts</button>
 				<button onClick={() => setResource('todos')} className="btn btn-danger">Todos</button>
+				<button onClick={() => setResource('memes')} className="btn btn-info">Memes 😂</button>
 			</div>
 
-			{resource && (
-				<>
-					<h2>{resource}</h2>
-					<p>There are {data.length} {resource}.</p>
-					<ol>
-						{data.map(item => (
-							<li key={item.id}>{item.title}</li>
-						))}
-					</ol>
-				</>
-			)}
+			<ResourceList
+				error={error}
+				isLoading={isLoading}
+				resource={resource}
+				data={data}
+			/>
 		</div>
 	)
 }
