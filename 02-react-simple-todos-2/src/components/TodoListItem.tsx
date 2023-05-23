@@ -1,5 +1,6 @@
 import React from 'react'
 import {Todo} from '../types/index'
+import { deleteTodos } from '../services/TodosAPI'
 
 interface IProps {
 	todo: Todo
@@ -20,9 +21,9 @@ const TodoListItem: React.FC<IProps> = ({ todo, onToggle }) => {
 				<span className="todo-toggle" onClick={() => onToggle(todo)} role="button">
 					{todo.completed ? '☑️' : '✅'}
 				</span>
-				{/* <span className="todo-delete" onClick={() => deleteTodo(todo)} role="button">
+				<span className="todo-delete" onClick={() => deleteTodos(todo.id!)} role="button">
 					🗑️
-				</span> */}
+				</span>
 			</span>
 		</li>
 	)

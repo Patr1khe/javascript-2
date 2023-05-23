@@ -1,0 +1,34 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "title": "Reacts Rocks!",
+      "completed": false
+    },
+    {
+      "id": 3,
+      "title": "Drink MOAR coffee",
+      "completed": true
+    },
+    {
+      "id": 4,
+      "title": "Drink ALL THE coffee",
+      "completed": true
+    },
+    {
+      "title": "lol",
+      "completed": true,
+      "id": 6
+    },
+    {
+      "title": "gg",
+      "completed": false,
+      "id": 7
+    },
+    {
+      "title": "hallelulja",
+      "completed": false,
+      "id": 8
+    }
+  ]
+}

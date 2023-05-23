@@ -1,49 +1,68 @@
 import React, { useEffect, useState } from 'react'
-import { Todo, Todos } from './assets/types'
-import TodoListItem from './assets/components/TodoListItem'
-import TodoCounter from './assets/components/TodoCounter'
-import AddNewTodoForm from './assets/components/AddNewTodoForm'
-import TodoList from './assets/components/TodoList'
+import { Todo, Todos } from './types'
+import TodoListItem from './components/TodoListItem'
+import TodoCounter from './components/TodoCounter'
+import AddNewTodoForm from './components/AddNewTodoForm'
+import TodoList from './components/TodoList'
+import * as TodosAPI from './services/TodosAPI'
 import './App.css'
 
 function App() {
-	const [todos, setTodos] = useState<Todos>([
-		{title: "Reacts Rocks!", completed: true,},
-		{title: "Cool", completed: false},
-		{title: "WHAAAT!", completed: true},
-	])
+	const [todos, setTodos] = useState<Todos>([])
 
-	const addTodo = (todo: Todo) => {
-		setTodos([...todos, todo])
+	// Get todos from api
+	const getTodos = async () => {
+		const data = await TodosAPI.getTodos()
+		setTodos(data)
 	}
 
-	const toggleTodo = (todo: Todo) => {
-		todo.completed = !todo.completed
+	// Create a new todo in the API
+	const addTodo = async (todo: Todo) => {
+		await TodosAPI.createTodos(todo)
+		getTodos()
 
-		setTodos([...todos])
 	}
 
-	const deleteTodo = (todoToDelete: Todo) => {
-		// set a new list of todos where the clicked todo is excluded
-		setTodos(todos.filter(todo => todo !== todoToDelete))
+	// Delete a todo in the api
+	const deleteTodo = async (todo: Todo) => {
+		if (!todo.id) {
+			return
+		}
+
+		// Delete todo from the api
+		await TodosAPI.deleteTodos(todo.id!)
+		await TodosAPI.deleteTodos(todo.id)
+
+		// Get all the todos from the api
+		getTodos()
+
+
 	}
+
+	const toggleTodo = async (todo: Todo) => {
+		if (!todo.id) {
+			return
+		}
+
+		// Update a todo in the api
+		await TodosAPI.updateTodo(todo.id, {
+			completed: !todo.completed
+		})
+
+
+		// Get all the todos from the api
+		getTodos()
+	}
+
+	// fetch todos when App is being mounted
+	useEffect(() => {
+		getTodos()
+	}, [])
 
 	const unfinishedTodos = todos.filter(todo => !todo.completed)
 	const finishedTodos = todos.filter(todo => todo.completed)
 
-	// This will only be executed when the component is mounted,
-	// and only AFTER the component has been rendered
-	useEffect(() => {
-		console.log("Look mom, I'm a newly mounted component 👶🏻")
-	}, [])
-
-	// Our first side-effect
-	useEffect( () => {
-		console.log("Updating page title using an effect")
-		document.title = `${finishedTodos.length} of ${todos.length} completed`
-	}, [finishedTodos.length, todos.length] )
-
-	console.log("Rendering...")
+	// console.log("App rendering...")
 
 	return (
 		<div className='App'>
@@ -66,28 +85,6 @@ function App() {
 						onDelete={deleteTodo}
 						todos={finishedTodos}
 					/>
-
-						{/* <ul className="todolist">
-							{unfinishedTodos.map((todo, index) => (
-								<TodoListItem
-									onToggle={toggleTodo}
-									onDelete={deleteTodo}
-									todo={todo}
-									key={index}
-								/>
-							) )}
-						</ul>
-
-						<ul className="todolist">
-							{finishedTodos.map((todo, index) => (
-								<TodoListItem
-									onToggle={toggleTodo}
-									onDelete={deleteTodo}
-									todo={todo}
-									key={index}
-								/>
-							) )}
-						</ul> */}
 
 						<TodoCounter finished={finishedTodos.length} total={todos.length} />
 					</>
