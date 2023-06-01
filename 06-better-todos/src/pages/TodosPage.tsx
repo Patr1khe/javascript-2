@@ -6,7 +6,7 @@ import AddNewTodoForm from '../components/AddNewTodoForm'
 import * as TodosAPI from '../services/TodosAPI'
 
 const TodosPage = () => {
-	const [todos, setTodos] = useState<Todos>([])
+	const [todos, setTodos] = useState<Todos|null>(null)
 
 	// Get todos from api
 	const getTodos = async () => {
@@ -52,12 +52,7 @@ const TodosPage = () => {
 
 	// fetch todos when App is being mounted
 	useEffect(() => {
-		console.log("TodosPage is being mounted for the first time")
 		getTodos()
-
-		return () => {
-			console.log("TodosPage is saying goodbye")
-		}
 	}, [])
 
 	return (
@@ -66,7 +61,7 @@ const TodosPage = () => {
 
 			<AddNewTodoForm onAddTodo={addTodo} />
 
-			{todos.length > 0 && (
+			{todos && todos.length > 0 && (
 				<ListGroup className="todolist">
 					{todos.map(todo => (
 						<ListGroup.Item
@@ -82,7 +77,7 @@ const TodosPage = () => {
 				</ListGroup>
 			)}
 
-			{todos.length === 0 && (
+			{todos && todos.length === 0 && (
 				<p>Yayyy, you have 0 todos to do</p>
 			)}
 		</>
