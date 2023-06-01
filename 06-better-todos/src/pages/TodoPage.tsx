@@ -12,6 +12,7 @@ const TodoPage = () => {
 	const navigate = useNavigate()
 	const { id } = useParams()
 	const todoId = Number(id)
+	const [showConfirmAlert, setShowConfirmAlert] = useState<boolean|null>(null)
 
 	// Get todo from API
 	const getTodo = async (id: number) => {
@@ -96,8 +97,16 @@ const TodoPage = () => {
 			<div className="buttons mb-3">
 				<Button variant='success' onClick={() => toggleTodo(todo)}>Toggle</Button>
 				<Button variant='warning'>Edit</Button>
-				<Button variant='danger' onClick={() => deleteTodo(todo)}>Delete</Button>
+				<Button variant='danger' onClick={() => setShowConfirmAlert(true)}>Delete</Button>
 			</div>
+
+			{showConfirmAlert && (
+					<Alert variant='danger'>
+						Are you sure?
+						<Button variant='warning' onClick={() => setShowConfirmAlert(false)}>No</Button>
+						<Button variant='success' onClick={() => deleteTodo(todo)}>Yes</Button>
+					</Alert>
+			)}
 
 			<Link to="/todos">
 				<Button variant='secondary'>&laquo; All todos</Button>
