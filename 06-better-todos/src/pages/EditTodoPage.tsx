@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import Alert from 'react-bootstrap/Alert'
 import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Todo } from '../types'
 import * as TodosAPI from '../services/TodosAPI'
 
-const TodoPage = () => {
+const EditTodoPage = () => {
 	const [error, setError] = useState<string|null>(null)
 	const [loading, setLoading] = useState(true)
 	const [todo, setTodo] = useState<Todo|null>(null)
+	const [newTodoTitle, setNewTodoTitle] = useState("")
 	const navigate = useNavigate()
 	const { id } = useParams()
 	const todoId = Number(id)
@@ -25,6 +27,7 @@ const TodoPage = () => {
 
 			// update todo state with data
 			setTodo(data)
+			setNewTodoTitle(data.title)
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
@@ -35,35 +38,22 @@ const TodoPage = () => {
 		setLoading(false)
 	}
 
-	// Delete a todo in the api
-	const deleteTodo = async (todo: Todo) => {
-		if (!todo.id) {
-			return
-		}
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
 
-		// Delete todo from the api
-		await TodosAPI.deleteTodo(todo.id)
-
-		// Navigate user to `/todos`
-		navigate('/todos?deleted=true', {
-			replace: true,
-		})
-	}
-
-	// Toggle the completed status of a todo in the api
-	const toggleTodo = async (todo: Todo) => {
-		if (!todo.id) {
+		if (!todo || !todo.id) {
 			return
 		}
 
 		// Update a todo in the api
-		const updatedTodo = await TodosAPI.updateTodo(todo.id, {
-			completed: !todo.completed
+		await TodosAPI.updateTodo(todo.id, {
+			title: newTodoTitle,
 		})
 
-		// update todo state with the updated todo
-		setTodo(updatedTodo)
+		// redirect user to /todos/:id
+		navigate(`/todos/${todo.id}`)
 	}
+
 
 	useEffect(() => {
 		if (typeof todoId !== "number") {
@@ -90,33 +80,29 @@ const TodoPage = () => {
 
 	return (
 		<>
-			<h1>{todo.title}</h1>
+			<h1>Edit: {todo.title}</h1>
+
+			<Form onSubmit={handleSubmit} className='mb-4'>
+				<Form.Group className="mb-3" controlId="title">
+					<Form.Label>Title</Form.Label>
+					<Form.Control
+						type="text"
+						placeholder="Enter the new title"
+						onChange={(e) => setNewTodoTitle(e.target.value)}
+						value={newTodoTitle}
+					/>
+				</Form.Group>
+
+				<Button variant="primary" type="submit">
+					Save
+				</Button>
+			</Form>
 
 			<p><strong>Status:</strong> {todo.completed ? 'Completed' : 'Not completed'}</p>
 
-			<div className="buttons mb-3">
-				<Button variant='success' onClick={() => toggleTodo(todo)}>Toggle</Button>
-
-				<Link to={`/todos/${todo.id}/edit`}>
-					<Button variant='warning'>Edit</Button>
-				</Link>
-
-				<Button variant='danger' onClick={() => setShowConfirmAlert(true)}>Delete</Button>
-			</div>
-
-			{showConfirmAlert && (
-					<Alert variant='danger'>
-						Are you sure?
-						<Button variant='warning' onClick={() => setShowConfirmAlert(false)}>No</Button>
-						<Button variant='success' onClick={() => deleteTodo(todo)}>Yes</Button>
-					</Alert>
-			)}
-
-			<Link to="/todos">
-				<Button variant='secondary'>&laquo; All todos</Button>
-			</Link>
+			<Button variant='secondary' onClick={() => navigate(-1)}>&laquo; Go back</Button>
 		</>
 	)
 }
 
-export default TodoPage
+export default EditTodoPage

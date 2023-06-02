@@ -14,6 +14,31 @@
       "title": "Learn React Bootstrap",
       "completed": false,
       "id": 6
+    },
+    {
+      "title": "oh no",
+      "completed": true,
+      "id": 7
+    },
+    {
+      "title": "<3 todos",
+      "completed": false,
+      "id": 8
+    },
+    {
+      "title": "</3 todos",
+      "completed": false,
+      "id": 9
+    },
+    {
+      "title": "ä",
+      "completed": false,
+      "id": 11
+    },
+    {
+      "title": "ö",
+      "completed": false,
+      "id": 12
     }
   ]
 }
