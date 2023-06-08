@@ -4,13 +4,22 @@ import { useContext } from 'react'
 import { ThemeContext } from '../contexts/ThemeContextProvider'
 
 const HomePage = () => {
-	const theme = useContext(ThemeContext)
+	const { isDarkMode, toggleTheme } = useContext(ThemeContext)
+
+	const handleToggleTheme = () => {
+		if (toggleTheme) {
+			toggleTheme()
+		}
+		// toggleTheme?.()
+	}
 
 	return (
 		<>
 			<h1>Welcome to Hacker News 🕵🏻‍♂️🤓👀!</h1>
 
-			<p>Your theme is: {theme}</p>
+			<p>Your theme is: {isDarkMode ? 'dark 🌙' : 'light '}</p>
+
+			<Button variant="warning" onClick={handleToggleTheme}>Switch theme</Button>
 
 			<Link to="/search">
 				<Button variant="primary">Use the Search, you must!</Button>
